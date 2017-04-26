@@ -24,19 +24,19 @@ public class OpCode {
 	public int getOpcode(String m){
 		int i;
 		for(i = 0; i < mnemonic.size(); i++)
-			if(mnemonic.get(i).equals(m))	break;
+			if(mnemonic.get(i).equals(m.toUpperCase()))	break;
 		if(i == mnemonic.size())	return -1;
 		return opcode.get(i);
 	}
 	public int getFormat(String m){
 		int i;
 		for(i = 0; i < mnemonic.size(); i++)
-			if(mnemonic.get(i).equals(m))	break;
+			if(mnemonic.get(i).equals(m.toUpperCase()))	break;
 		if(i == mnemonic.size())	return -1;
 		return format.get(i);
 	}
 	
-	public int getCount(){
+	public int size(){
 		return format.size();
 	}
 }

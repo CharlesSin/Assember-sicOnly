@@ -10,12 +10,11 @@ public class Card {
 		String content = new String();
 		String a,b,c;
 		a = source.getLabel(0);
-		b = String.format("%06X", source.getLocation(0));
-		c = String.format("%06X", source.getLocation(source.getCount()-1) - source.getLocation(0));
-		H = a + " " + b + " " + c;
-		//H = source.getLabel(0) + " " + String.format("%06s", source.getOperation(0)) + " " + String.format("%06d", source.getLocation(source.getCount()-1) - source.getLocation(0) + 1);
-		for(int i = 0; i < source.getCount()-1; i++){
-			if(count +  source.getLocation(i+1) - source.getLocation(i) > 30 || source.getObject(i) == "FFFFFF"){
+		b = String.format(" %06X", source.getLocation(0));
+		c = String.format(" %06X", source.getLocation(source.size()-1) - source.getLocation(0));
+		H = a + b + c;
+		for(int i = 0; i < source.size()-1; i++){
+			if(count +  (source.getObject(i).length() / 2) > 30 || source.getObject(i) == "FFFFFF"){
 				if(content.equals("")){
 					location = source.getLocation(i+1);
 					continue;
@@ -30,13 +29,13 @@ public class Card {
 				location = source.getLocation(i);
 			}
 			content += String.format(" %s", source.getObject(i));
-			count += source.getLocation(i+1) - source.getLocation(i);
+			count += source.getObject(i).length() / 2;
 		}
 		if(!content.equals("")){
 			content = String.format("%06X ", location) + String.format("%02X", count) + content;
 			T.add(content);
 		}
-		E = String.format("%06X", source.getLocation(source.findlabel(source.getOperand(source.getCount()-1))));
+		E = String.format("%06X", source.getLocation(source.findLabel(source.getOperand(source.size()-1))));
 	}
 	
 	public int SizeOfT(){
