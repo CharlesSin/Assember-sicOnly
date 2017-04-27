@@ -50,7 +50,7 @@ public class Output {
             output = new BufferedWriter(new FileWriter(new File("src/Data/card.txt")));	//開啟card.txt檔
             output.write(String.format("H " + card.getH() + "\r\n"));		//印出H卡片
     		for(int i = 0; i < card.SizeOfT(); i++)							//印出T卡片
-    			output.write(String.format("T " + card.getT(i) + "\r\n"));
+    			output.write(String.format("T "	 + card.getT(i) + "\r\n"));
     		output.write(String.format("E " + card.getE() + "\r\n"));		//印出E卡片
         } catch ( IOException e ) {
             e.printStackTrace();

@@ -5,20 +5,21 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 public class Source {
-	//Builded
+	//Check Flag
 	private boolean sourceError = false;							//格式 錯誤旗標
 	private boolean[] operationError;								//OP code 錯誤旗標
 	private boolean[] operandError;									//operand 錯誤旗標
 	private boolean[] locationError;								//生成location時，判斷前行是否生成成功的旗標
 	private Vector<Boolean> X = new Vector<Boolean>();				//X 旗標
+	//Builded
 	private Vector<Integer> location = new Vector<Integer>();		//LOC 欄位
 	private Vector<String> object = new Vector<String>();			//object code 欄位
-	//Source file
+	//Source File
 	private Vector<String> label = new Vector<String>();			//標籤 欄位
 	private Vector<String> operation = new Vector<String>();		//OP code 欄位
 	private Vector<String> operand = new Vector<String>();			//operand 欄位
 	private Vector<String> comment = new Vector<String>();			//註解 欄位
-	//Assist building
+	//Assist Building
 	private OpCode op = new OpCode();								//OP code 列表
 	
 	public Source() {
