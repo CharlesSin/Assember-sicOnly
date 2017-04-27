@@ -6,6 +6,7 @@ public class Card {
 	private String E = new String();
 	Card(Source source){
 		super();
+		if(source.getSourceError())	return;
 		int count = 0, location = source.getLocation(0);
 		String content = new String();
 		String a,b,c;
