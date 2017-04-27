@@ -45,7 +45,7 @@ public class Source {
 			try{
 				StringTokenizer splitLine = new StringTokenizer(line, " ");				//字串分割
 				while(splitLine.hasMoreTokens()){part[i++] = splitLine.nextToken();}	//分配分割後的字串
-				for(;i < 4; i++)	part[i] = " ";										//補齊剩餘字串
+				for(;i < 4; i++)	part[i] = " ";										//以空白字串補齊剩餘字串
 			}
 			catch(Exception e){
 				sourceError = true;
@@ -82,7 +82,7 @@ public class Source {
 		operandError = new boolean[size()];			//宣告原檔大喜的operand 錯誤旗標
 		//檢查START合法性
 		if(!operation.get(0).equals("START") || !isInteger(operand.get(0),true))	
-			sourceError = true;						//若第一行不為START或 SART後不是接16進位數字(程式起始位置)
+			sourceError = true;						//若第一行不為START或 SART後不是接16進位數字(程式起始位址)
 		X.add(false);		//SART沒有X
 		//檢查code內文合法性(扣除START與END)
 		for(int i = 1; i < size()-1; i++){
@@ -107,7 +107,7 @@ public class Source {
 					operand.get(i).getChars(2, operand.get(i).length()-1, temp, 0);		//將operand除去 X'' 三個char
 					if(!isInteger(new String(temp),true))	operandError[i] = true;		//檢查暫存器內的字串是否為16進位數字
 				}
-				else if(operand.get(i).charAt(0) != 'C')	operandError[i] = true;	//若operand為 C'   '
+				else if(operand.get(i).charAt(0) != 'C')	operandError[i] = true;	//若operand為 C'   '，內含文字則任意都可
 			}
 			else if(operation.get(i).equals("WORD")){	//若Op code為 WORD
 				if(!isInteger(operand.get(i),false))	
@@ -139,7 +139,7 @@ public class Source {
 		locationError = new boolean[size()];
 		location.add(Integer.valueOf(operand.get(0),16));
 		for(int i = 1; i < size(); i++){
-		//若前一行    位置生成錯誤          或       OP code旗標錯誤        或      operand旗標錯誤
+		//若前一行    位址生成錯誤          或       OP code旗標錯誤        或      operand旗標錯誤
 			if(locationError[i-1] || operationError[i-1] || operandError[i-1]){
 				locationError[i] = true;
 				location.add(0);
@@ -147,11 +147,11 @@ public class Source {
 			}
 			
 			if(operation.get(i).equals("ORG")){
-				if(operand.get(i).equals(" ")){	//如果ORG後面無operand，代表回到ORG之前的位置
+				if(operand.get(i).equals(" ")){	//如果ORG後面無operand，代表回到ORG之前的位址
 					location.add(org);
 					org = 0;
 				}
-				else{	//如果ORG後面有operand，代表移到該標籤位置，以org暫存原本該生成的位置，以下位置計算方式與外層else if計算方式一樣，註解就不寫兩次
+				else{	//如果ORG後面有operand，代表移到該標籤位址，以org暫存原本該生成的位址，以下位址計算方式與外層else if計算方式一樣，註解就不寫兩次
 					if(operation.get(i-1).equals("RESW") || operation.get(i-1).equals("RESB"))
 						org = location.get(i-1) + op.getFormat(operation.get(i-1)) * Integer.valueOf(operand.get(i-1));
 					else if(operation.get(i-1).equals("BYTE")){
@@ -162,21 +162,21 @@ public class Source {
 					}
 					else
 						org = location.get(i-1) + op.getFormat(operation.get(i-1));
-					location.add(location.get(findLabel(operand.get(i))));	//location = operand 指向的標籤位置
+					location.add(location.get(findLabel(operand.get(i))));	//location = operand 指向的標籤位址
 				}
 			}
-			//若Op code為 RESW 或 RESB，位置 = 前一位置 + 該Op code的format * operand
+			//若Op code為 RESW 或 RESB，位址 = 前一位址 + 該Op code的format * operand
 			else if(operation.get(i-1).equals("RESW") || operation.get(i-1).equals("RESB")){
 				location.add(location.get(i-1) + op.getFormat(operation.get(i-1)) * Integer.valueOf(operand.get(i-1)));
 			}
 			//若Op code為BYTE
 			else if(operation.get(i-1).equals("BYTE")){
 				if(operand.get(i-1).charAt(0) == 'C') 		//若為C模式
-					location.add(location.get(i-1) + (operand.get(i-1).length()-3) );	//C為1個字1Byte，位置 = 前一位置 + '內含的char個數'
+					location.add(location.get(i-1) + (operand.get(i-1).length()-3) );	//C為1個字1Byte，位址 = 前一位址 + '內含的char個數'
 				else if(operand.get(i-1).charAt(0) == 'X')	//若為X模式
-					location.add(location.get(i-1) + (operand.get(i-1).length()-3) / 2);//X為2個字1Byte，位置 = 前一位置 + '內涵的char個數'除以2
+					location.add(location.get(i-1) + (operand.get(i-1).length()-3) / 2);//X為2個字1Byte，位址 = 前一位址 + '內涵的char個數'除以2
 			}
-			else	//其餘的位置則依照該Op code的format再加上前一位置(通常為3)
+			else	//其餘的位址則依照該Op code的format再加上前一位址(通常為3)
 				location.add(location.get(i-1) + op.getFormat(operation.get(i-1)));
 		}
 	}
@@ -185,46 +185,46 @@ public class Source {
 		int OP, x, flag;
 		char[] temp;
 		for(int i = 0; i < size(); i++){
+			//若      OP code旗標錯誤 或     operand旗標錯誤
 			if(operationError[i] || operandError[i]){
-				object.add("000000");
+				object.add("000000");					//以000000代替無法生成的位址
 				continue;
 			}
-			OP = 0; x = 0;
+			OP = 0; x = 0;								//初始化OPcode與 X旗標
 			OP = op.getOpcode(operation.get(i));
-			if(X.get(i))	x = 1;
-			if(OP == 0xAA)	object.add("FFFFFF");
-			else if(operation.get(i).equals("WORD")){
+			if(X.get(i))	x = 1;						//如果有X,將x變數設為1
+			if(OP == 0xAA)	object.add("FFFFFF");		//若為虛擬指令，將object code 預設為FFFFFF (印出時判斷用)
+			else if(operation.get(i).equals("WORD")){	//若Op code為WORD，將operand直接轉為16進位字串
 				flag = Integer.valueOf(operand.get(i));
 				object.add(String.format("%06X", flag));
 			}
-			else if(operation.get(i).equals("BYTE")){
+			else if(operation.get(i).equals("BYTE")){	//若Op code為BYTE，再進一步判斷為X或C
 				if(operand.get(i).charAt(0) == 'X'){
 					temp = new char[operand.get(i).length()-3];
-					operand.get(i).getChars(2, operand.get(i).length()-1, temp, 0);
-					flag = Integer.valueOf(new String(temp),16);
-					object.add(new String(temp));
+					operand.get(i).getChars(2, operand.get(i).length()-1, temp, 0);	//將單引號內的數字分割出來
+					object.add(new String(temp));									//該字串即為object code
 				}
 				else if(operand.get(i).charAt(0) == 'C'){
 					flag = 0;
 					temp = new char[operand.get(i).length()-3];
-					operand.get(i).getChars(2, operand.get(i).length()-1, temp, 0);
+					operand.get(i).getChars(2, operand.get(i).length()-1, temp, 0);	//將單引號內的數字分割出來
 					for(int j = 0; j < temp.length; j++)
-						flag = flag * 0x100 + (int) new String(temp).charAt(j);
-					object.add(String.format("%X", flag));
+						flag = flag * 0x100 + (int) new String(temp).charAt(j);		//將flag往左移兩位再加上每個char的ASCII code
+					object.add(String.format("%X", flag));							//將flag以16進位方式轉成字串
 				}
 			}
-			else if(operation.get(i).equals("RSUB"))
+			else if(operation.get(i).equals("RSUB"))	//若Op code為RSUB，前一行位址直接加上X後轉成字串
 				object.add(String.format("%06X", OP * 0x10000 + x * 0x8000));
-			else
+			else										//其餘的operand必為標籤，前一行字串
 				object.add(String.format("%06X", OP * 0x10000 + x * 0x8000 + location.get(findLabel(operand.get(i)))));
 		}
 	}
-	
+	//判斷是否為數字內容的字串        輸入字串	16進位判斷開關
 	private boolean isInteger(String s, boolean hex) {
-		try {Integer.parseInt(s); }
+		try {Integer.parseInt(s); }				//將字串轉為10進位數字
 		catch (NumberFormatException ex) {
 			if(hex){
-				try{Long.parseLong(s, 16);}
+				try{Long.parseLong(s, 16);}		//將字串轉為16進位數字
 				catch(NumberFormatException e){return false;}
 			}
 			else	return false;
